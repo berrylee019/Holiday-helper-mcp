@@ -322,7 +322,8 @@ def get_long_weekends(
     for b in longs:
         names = ", ".join(sorted({n for _, n in block_holidays(b, allh)}))
         out.append(f"· {span(*b)} — {block_len(b)}일 ({names})")
-    br = [x for x in bridges(blocks, allh, max_leave_days) if x["end"] >= date(year, 1, 1) and x["start"] <= date(year, 12, 31)]
+    # 연차를 쓰는 날이 모두 해당 연도 안에 있는 경우만 보여 준다(전년도 12월 연차 등은 제외)
+    br = [x for x in bridges(blocks, allh, max_leave_days) if all(d.year == year for d in x["leave_days"])]
     out.append(f"■ 연차 {max_leave_days}일 이내로 이어 쓰기")
     if not br:
         out.append("· 해당하는 경우가 없습니다.")
@@ -382,7 +383,7 @@ def get_holiday_reference() -> str:
     return "\n".join([
         "■ 공휴일·연휴 도우미 기준",
         f"■ 데이터: {SOURCE.replace('출처: ', '')}의 공휴일 정보(대체공휴일·임시공휴일 포함, 지정된 경우)",
-        "■ 공휴일: 특일 정보에서 공휴일로 표시된 날만 포함합니다. 근로자의 날 등 공휴일이 아닌 기념일은 포함하지 않습니다.",
+        "■ 공휴일: 특일 정보에서 공휴일로 표시된 날만 포함합니다. 법령 개정으로 공휴일 지정이 바뀌면 이 데이터에 따라 달라질 수 있습니다.",
         "■ 연휴 계산: 공휴일과 토·일요일이 이어지는 날을 연휴로 세고, 사이 평일이 1~3일이면 연차로 이을 수 있는 경우를 보여 줍니다.",
         "■ 신선도: 같은 조회는 최대 24시간 전 결과를 재사용할 수 있습니다. 아직 공개되지 않은 해는 조회되지 않을 수 있습니다.",
         NOTICE,

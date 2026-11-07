@@ -88,6 +88,11 @@ class Long(Base):
         r3 = main.get_long_weekends(2026, 3)
         self.assertIn("연차 3일(2026-09-21(월), 2026-09-22(화), 2026-09-23(수)) 사용 → 2026-09-19(토) ~ 2026-09-28(월) 총 10일 휴무", r3)
 
+    def test_bridges_stay_in_year(self):
+        r = main.get_long_weekends(2026, 3)
+        self.assertNotIn("2025-12-29", r)
+        self.assertIn("연차 1일(2026-01-02(금)) 사용 → 2026-01-01(목) ~ 2026-01-04(일) 총 4일 휴무", r)
+
     def test_unpublished(self):
         self.assertTrue(main.get_long_weekends(2027).startswith("[입력 확인]"))
 
@@ -129,7 +134,7 @@ class Errors(unittest.TestCase):
 class Reference(unittest.TestCase):
     def test_ref(self):
         r = main.get_holiday_reference()
-        for s in ("근로자의 날", "1~3일", "24시간"):
+        for s in ("공휴일로 표시된 날", "1~3일", "24시간"):
             self.assertIn(s, r)
 
 
